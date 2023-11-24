@@ -9,17 +9,26 @@ using UnityEngine.UI;
 public class PlaterCotrol : MonoBehaviour
 {
     [SerializeField]
-    private float rotationSpeed = 4f;
+    public float rotationSpeed = 4f;
     [SerializeField]
     private InputActionReference movementControl;
     [SerializeField]
     private InputActionReference jumpControl;
     [SerializeField]
-    private float playerSpeed = 2.0f;
+    public float playerSpeed = 2.0f;
     [SerializeField]
-    private float jumpHeight = 1.0f;
+    public float jumpHeight = 1.0f;
     [SerializeField]
     private float gravityValue = -9.81f;
+
+    public Image malestarBar;
+    public float malestar, maxMalestar;
+
+    public float attackCost;
+    public float costoQuieto;
+    public float cantidadRecarga;
+
+    private Coroutine recarga;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
@@ -73,6 +82,41 @@ public class PlaterCotrol : MonoBehaviour
             float targerAngle= Mathf.Atan2(movement.x,movement.y)* Mathf.Rad2Deg+ cameraMainTransform.eulerAngles.y;
             Quaternion rotation= Quaternion.Euler(0f, targerAngle, 0f);
             transform.rotation = Quaternion.Lerp(transform.rotation,rotation,Time.deltaTime * rotationSpeed);
+        }
+
+        if (Input.GetKeyDown("f"))
+        {
+            Debug.Log("Attack");
+            malestar -= attackCost;
+
+            if (malestar < 0f) malestar = 0f;
+
+            malestarBar.fillAmount = malestar / maxMalestar;
+        }
+
+        if (movement == Vector2.zero)
+        {
+            malestar-=costoQuieto*Time.deltaTime;
+            if(malestar < 0f) malestar= 0f;
+            malestarBar.fillAmount=malestar / maxMalestar;
+
+            if (recarga != null)StopCoroutine(recarga);
+            recarga = StartCoroutine(recargaMalestar());
+        }
+    }
+
+    private IEnumerator recargaMalestar()
+    {
+        yield return new WaitForSeconds(1f);
+
+        while (malestar < maxMalestar)
+        {
+            malestar += cantidadRecarga / 10f;
+
+            if (malestar > maxMalestar) malestar=maxMalestar;
+            malestarBar.fillAmount= malestar / maxMalestar;
+
+            yield return new WaitForSeconds(.1f);
         }
     }
 }
