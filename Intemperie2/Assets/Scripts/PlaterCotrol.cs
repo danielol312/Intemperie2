@@ -25,6 +25,10 @@ public class PlaterCotrol : MonoBehaviour
     public Image malestarBar;
     public float malestar, maxMalestar;
 
+    [Header("Animations")]
+    [SerializeField]
+    private Animator animator;
+
 
     private bool controlPerdido = false;
 
@@ -82,22 +86,27 @@ public class PlaterCotrol : MonoBehaviour
             move.y = 0f;
             controller.Move(move * Time.deltaTime * playerSpeed);
 
-       
+            animator.SetBool("IsRunning", true);
+
 
             // Changes the height position of the player..
             if (jumpControl.action.triggered && groundedPlayer)
             {
                 playerVelocity.y += Mathf.Sqrt(jumpHeight * -3.0f * gravityValue);
+                animator.SetBool("IsJumping", true);
             }
 
             playerVelocity.y += gravityValue * Time.deltaTime;
             controller.Move(playerVelocity * Time.deltaTime);
+
+            
 
             if (movement != Vector2.zero)
             {
                 float targerAngle= Mathf.Atan2(movement.x,movement.y)* Mathf.Rad2Deg+ cameraMainTransform.eulerAngles.y;
                 Quaternion rotation= Quaternion.Euler(0f, targerAngle, 0f);
                 transform.rotation = Quaternion.Lerp(transform.rotation,rotation,Time.deltaTime * rotationSpeed);
+                animator.SetBool("IsRunning", true);
             }
 
             if (Input.GetKeyDown("f"))
