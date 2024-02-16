@@ -4957,11 +4957,12 @@ GameObject:
   - component: {fileID: 7011397576650943668}
   - component: {fileID: 2764381373594557446}
   - component: {fileID: 1198939926527726898}
-  - component: {fileID: 6491951252508751846}
   - component: {fileID: 5659134443314631923}
+  - component: {fileID: 8778456018753606783}
+  - component: {fileID: 2087428056486315205}
   m_Layer: 0
   m_Name: Collectable
-  m_TagString: Untagged
+  m_TagString: Collectable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -4974,7 +4975,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495330102139593303}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: 0.69782585, w: 0.7162675}
+  m_LocalRotation: {x: 0, y: 0, z: 0.6978279, w: 0.7162655}
   m_LocalPosition: {x: 8, y: 1.09, z: -98.8}
   m_LocalScale: {x: 1, y: 0.068255, z: 1}
   m_ConstrainProportionsScale: 0
@@ -5034,8 +5035,20 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &6491951252508751846
-CapsuleCollider:
+--- !u!114 &5659134443314631923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495330102139593303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59abd90e76bca8c40ba7b9a3cd29092f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!135 &8778456018753606783
+SphereCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -5052,23 +5065,36 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5000001
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &5659134443314631923
-MonoBehaviour:
+  serializedVersion: 3
+  m_Radius: 1.0755101
+  m_Center: {x: 3.4860848e-10, y: -1.1062335, z: -0.0000057217017}
+--- !u!54 &2087428056486315205
+Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4495330102139593303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 59abd90e76bca8c40ba7b9a3cd29092f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1001 &8993283216969122931
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5121,6 +5147,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Butterfly Animation Assignment
       objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: e36e91219b5ceb04796287cd6a8d598f, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 914ee358cbd582641a66835983de1386, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

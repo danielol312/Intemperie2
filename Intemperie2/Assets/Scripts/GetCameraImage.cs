@@ -20,7 +20,8 @@ public class GetCameraImage : MonoBehaviour
         if(!webCam.isPlaying) webCam.Play();
         img.texture = webCam;
 
-        cascade = new CascadeClassifier(Application.dataPath+@"haarcascade_frontalface_default.xml");
+        
+        cascade = new CascadeClassifier(Application.dataPath+ @"haarcascade_frontalface_default.xml");
     }
 
     private void Update()

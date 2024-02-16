@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CountDown : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class CountDown : MonoBehaviour
         timer -= Time.deltaTime;
         if (timer <= 0)
         {
-            Application.LoadLevel(levelToLoad);
+            SceneManager.LoadScene(levelToLoad);
         }
     }
 }

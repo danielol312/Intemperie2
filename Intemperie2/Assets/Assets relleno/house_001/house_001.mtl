@@ -1,0 +1,28 @@
+# Blender MTL File: 'house_001.blend'
+# Material Count: 2
+
+newmtl House
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump Textures\\house_nor.tga
+map_Kd Textures\\house_col.tga
+map_Ks Textures\\house_spec.tga
+
+newmtl Windows
+Ns 225.000000
+Ka 1.000000 1.000000 1.000000
+Kd 0.800000 0.800000 0.800000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 2
+map_Bump Textures\\window_nor.tga
+map_Kd Textures\\window_col.tga
+map_Ks Textures\\window_spec.tga

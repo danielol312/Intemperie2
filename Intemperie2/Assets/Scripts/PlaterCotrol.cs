@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class PlaterCotrol : MonoBehaviour
 {
-
+    private Rigidbody rb;
     [SerializeField]
     public float rotationSpeed = 4f;
     [SerializeField]
@@ -21,6 +21,13 @@ public class PlaterCotrol : MonoBehaviour
     public float jumpHeight = 1.0f;
     [SerializeField]
     private float gravityValue = -9.81f;
+    [SerializeField]
+    public GameObject Smoke;
+    [SerializeField]
+    public GameObject Heal;
+
+    [SerializeField]
+    
 
     public Image malestarBar;
     public float malestar, maxMalestar;
@@ -29,22 +36,48 @@ public class PlaterCotrol : MonoBehaviour
     [SerializeField]
     private Animator animator;
 
+    [Header("Perder Control")]
+    public Transform target;
+    public float rotateSpeed = 30f;
+
+    //[Header("Dash Variables")]
+    //[SerializeField] bool canDash=false;
+    //[SerializeField] bool isDashing;
+    //[SerializeField] float dashPower;
+    //[SerializeField] float dashTime;
+    //[SerializeField] float dashCoolDown;
+    //private TrailRenderer dashTrail;
+    //[SerializeField] float dashGravity;
+    //private float normalGravity;
+    //private float waitTime;
+
 
     private bool controlPerdido = false;
+    public GameObject controlPerdidoUI;
 
     public float radio;
     public float velocidadRotacion =2f;
 
-    public float attackCost;
+    public float attackCost=10f;
     public float costoQuieto;
     public float cantidadRecarga;
 
     private Coroutine recarga;
 
-    private CharacterController controller;
-    private Vector3 playerVelocity;
+    public CharacterController controller;
+    public Vector3 playerVelocity;
     private bool groundedPlayer;
     private Transform cameraMainTransform;
+
+    public Blackhole blackHole;
+    
+
+    float dashTimer = 0.15f;
+    float initialDashTimer;
+    bool canDash = true;
+    bool isDashing;
+    float dashCoolDown = 2f;
+
 
     private void OnEnable()
     {
@@ -56,21 +89,26 @@ public class PlaterCotrol : MonoBehaviour
         movementControl.action.Disable();
         jumpControl.action.Disable();
     }
-
-    private void Start()
+    private void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
+    }
+    private void Start()
+    {
+        initialDashTimer = dashTimer;
         cameraMainTransform = Camera.main.transform;
     }
 
     void Update()
     {
 
-        if (malestar <= 0f && !controlPerdido)
+        if (malestar <= 0f && !controlPerdido && malestarBar != null)
         {
-            controlPerdido = true;
-            StartCoroutine(MoverAleatorio());
+            //controlPerdido = true;
+            MoverAleatorio1();
             Debug.Log("Control perdido , muévete frente a la cámara");
+            controlPerdidoUI.gameObject.SetActive(true);
+
         }
         if (!controlPerdido) { 
 
@@ -78,15 +116,46 @@ public class PlaterCotrol : MonoBehaviour
             if (groundedPlayer && playerVelocity.y < 0)
             {
                 playerVelocity.y = 0f;
+                animator.SetBool("IsJumping", false);
             }
+            
             Vector2 movement = movementControl.action.ReadValue<Vector2>();
+          
             Vector3 move = new Vector3(movement.x, 0, movement.y );
+            move = cameraMainTransform.forward*move.z+cameraMainTransform.right*move.x ;
+            if(blackHole != null) move += new Vector3(blackHole.AddedForce.normalized.x, 0f, blackHole.AddedForce.normalized.z)*0.6f;
+            //move.y = 0f;
 
-            move = cameraMainTransform.forward*move.z+cameraMainTransform.right*move.x;
-            move.y = 0f;
+            //Dashing
+            if (Input.GetKeyDown(KeyCode.Q) && !isDashing && canDash)
+            {
+                isDashing = true;
+            }
+            if (isDashing)
+            {
+                isDashing = true;
+                dashTimer -= Time.deltaTime;
+                if (dashTimer <= 0)
+                {
+                    isDashing = false;
+                    dashTimer = initialDashTimer;
+                    canDash = false;
+                    StartCoroutine(DashCoolDown());
+                }
+                Debug.Log("Dashed");
+                move += Time.deltaTime * cameraMainTransform.forward * 350f;
+            }
             controller.Move(move * Time.deltaTime * playerSpeed);
-
-            animator.SetBool("IsRunning", true);
+            if (movement.magnitude == 0f)
+            {
+                animator.SetBool("IsRunning", false);
+            }
+            else
+            {
+                animator.SetBool("IsRunning", true);
+            }
+           
+            
 
 
             // Changes the height position of the player..
@@ -109,59 +178,98 @@ public class PlaterCotrol : MonoBehaviour
                 animator.SetBool("IsRunning", true);
             }
 
-            if (Input.GetKeyDown("f"))
+            if (Input.GetKeyDown(KeyCode.F))
             {
                 Debug.Log("Attack");
-                malestar -= attackCost;
+                malestar += attackCost ;
 
-                if (malestar < 0f) malestar = 0f;
+                //if (malestar < 0f) malestar = 0f;
 
                 malestarBar.fillAmount = malestar / maxMalestar;
+                movement = Vector2.zero;
+                Heal.gameObject.SetActive(true);
             }
 
             if (movement == Vector2.zero)
             {
                 malestar-=costoQuieto*Time.deltaTime;
                 if(malestar < 0f) malestar= 0f;
-                malestarBar.fillAmount=malestar / maxMalestar;
-
+                if (malestarBar != null) malestarBar.fillAmount = malestar / maxMalestar;
                 if (recarga != null)StopCoroutine(recarga);
-                recarga = StartCoroutine(recargaMalestar());
+                //recarga = StartCoroutine(recargaMalestar());
+                
+            }
+            //Smoke
+            if (malestarBar != null)
+            {
+                if (malestar <= 25)
+                {
+                    Smoke.gameObject.SetActive(true);
+                }
+                if (malestar >= 26)
+                {
+                    Smoke.gameObject.SetActive(false);
+                }
             }
         }
 
 
     }
-
+    private IEnumerator DashCoolDown()
+    {
+        float timer = 0;
+        while (timer< dashCoolDown)
+        {
+            Debug.Log("timer" + timer);
+            timer += Time.deltaTime;
+            yield return null;  
+        }
+        canDash = true;
+        yield break;
+    }
     private IEnumerator recargaMalestar()
     {
         yield return new WaitForSeconds(1f);
 
-        while (malestar < maxMalestar)
+        if (malestarBar != null)
         {
-            malestar += cantidadRecarga / 10f;
+            while (malestar < maxMalestar)
+            {
 
-            if (malestar > maxMalestar) malestar=maxMalestar;
-            malestarBar.fillAmount= malestar / maxMalestar;
+                malestar += cantidadRecarga / 10f;
 
-            yield return new WaitForSeconds(.1f);
+                if (malestar > maxMalestar) malestar = maxMalestar;
+                malestarBar.fillAmount = malestar / maxMalestar;
+
+                yield return new WaitForSeconds(.1f);
+            }
+        }
+        else
+        {
+            yield return null;
         }
     }
 
-   
-
-    private IEnumerator MoverAleatorio()
+    private void MoverAleatorio1()
     {
-        yield return new WaitForSeconds(1f);
-
-        // Calcular la posición en el círculo
-        float angulo = Time.time * velocidadRotacion;
-        float x = Mathf.Cos(angulo) * radio;
-        float z = Mathf.Sin(angulo) * radio;
-
-        // Actualizar la posición del personaje
-        transform.position = new Vector3(x, 0, z);
+        if (malestarBar != null)
+        {
+            transform.Rotate(rotateSpeed * Time.deltaTime * Vector3.up * 70f);
+        }
     }
+
+    //private IEnumerator MoverAleatorio()
+    //{
+    //    yield return new WaitForSeconds(1f);
+
+    //    // Calcular la posición en el círculo
+    //    float angulo = Time.time * velocidadRotacion;
+    //    float x = Mathf.Cos(angulo) * radio;
+    //    float z = Mathf.Sin(angulo) * radio;
+
+    //    // Actualizar la posición del personaje
+    //    transform.position = new Vector3(x, 0, z);
+    //}
 
    
 }
